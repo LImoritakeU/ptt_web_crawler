@@ -45,6 +45,11 @@ class PttPage:
         page.get(number)
         return page
 
+    def get_prev(self):
+        number = self.number - 1
+        if number > 0:
+            return self.get(number)
+
 
     def get(self, number=None):
         partial_url = '{}/bbs/{}'.format(self.site_url, self.boardname)
@@ -92,15 +97,19 @@ class PttPage:
 
     @property
     def posts(self):
+        print("posts")
         if self.html is None:
             raise Exception
 
         posts_elements = pq(self.html)('.r-ent')
+        posts_elements = filter(lambda x: pq(x)('.title a').attr('href'), posts_elements)
         return [self._parse_posts(ele) for ele in posts_elements]
 
     def _parse_posts(self, post):
         d = pq(post)
         url = d('.title a').attr('href')
+        if not url:
+            return
         timestamp = url.split('.')[1]
         id = url.split('/')[-1][:-5]
 
@@ -145,11 +154,12 @@ class PttPost:
         self.html = resp.text
         self.root = pq(self.html)
 
-        if self.root("#main-content > .article-metaline") is None:
+        if "404" in self.root(".main-container").text():
             self.is_404 = True
+        else:
+            self.is_404 = False
 
         return self
-
 
     @property
     def user_ip(self):
@@ -167,11 +177,12 @@ class PttPost:
 
     @property
     def content(self):
-        return self.root("#main-content")[0].xpath("./text()")[0].strip()
+        return "".join(self.root("#main-content")[0].xpath("./text()")).strip()
     
     @property
     def title(self):
-        return self.root("#main-content > .article-metaline span")[3].text
+        print(self.url)
+        return self.root(".article-metaline span")[3].text
 
     @property
     def author(self):
@@ -234,10 +245,16 @@ class PttPost:
                 "content": "",
                 "timestamp": self.timestamp,
                 "ip": "",
-                "message_count": "",
-                "messages": "",
+                "message_count": {
+                    "all": "",
+                    "boo": "",
+                    "count": "",
+                    "neutral": "",
+                    "push": "",
+                },
+                "messages": [],
                 "url": self.url,
-                "is_404": True
+                "is_404": self.is_404,
             }
         return {
             # "post_snapshot": self.snapshot,
@@ -251,10 +268,12 @@ class PttPost:
             "message_count": self.calculate_messages(),
             "messages": self.pushs,
             "url": self.url,
+            "is_404": self.is_404,
         }
 
-    def to_json(self):
-        return json.dumps(self.to_dict(), ensure_ascii=False)
+    def to_json(self, ascii=True):
+
+        return json.dumps(self.to_dict(), ensure_ascii=ascii)
 
 
 def get_posts(boardname, number=None, session=None):
