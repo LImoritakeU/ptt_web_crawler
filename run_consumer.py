@@ -23,6 +23,7 @@ def consume_url(url, session=None):
     except Exception as e:
         logger.error("error: {} {}".format(post.url, e))
 
+
 def setup_logger():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.ERROR)
@@ -39,6 +40,7 @@ def setup_logger():
 
 
 logger = setup_logger()
+
 
 def insert_to_gcs(content_str):
     utcnow_str = datetime.utcnow().strftime("%Y%m%d_%H%M%S")

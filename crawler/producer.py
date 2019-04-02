@@ -10,12 +10,10 @@ topic_name = ""
 publisher = pubsub_v1.PublisherClient()
 topic_path = publisher.topic_path(project_id, topic_name)
 
-
 cli: Client = Client.from_service_account_json(
     "/home/shihhao/cloud_auth/firestore_la.json"
 )
 bucket = cli.get_bucket("tw_forum_collect")
-
 
 
 def get_ptt_page(board, number=None):
@@ -27,7 +25,6 @@ def setup_config():
 
 
 def produce(url):
-
 
 
 def insert_to_gcs(page, path):
@@ -53,7 +50,6 @@ def produce_urls():
 
     max_ts = 0
 
-
     while True:
         posts = page.posts
         ts_list = [int(p['timestamp']) for p in posts]
@@ -72,11 +68,8 @@ def produce_urls():
             with open('text.txt', 'a') as f:
                 [f.write(post['url'] + "\n") for post in posts]
 
-
             max_ts = max(ts_list)
 
         page = page.get_prev()
 
     last_timestamp = max_ts
-
-

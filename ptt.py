@@ -21,7 +21,7 @@ class PttPage:
     html = None
     is_last = None
 
-    def __init__(self, boardname, number=None, session: requests.Session =None, lazy=False):
+    def __init__(self, boardname, number=None, session: requests.Session = None, lazy=False):
         self.number = number
         self.boardname = boardname
         self.session = session
@@ -49,7 +49,6 @@ class PttPage:
         number = self.number - 1
         if number > 0:
             return self.get(number)
-
 
     def get(self, number=None):
         partial_url = '{}/bbs/{}'.format(self.site_url, self.boardname)
@@ -144,7 +143,6 @@ class PttPost:
         if not lazy:
             self.get()
 
-
     def get(self):
         try:
             resp = self.session.get(self.url, verify=False)
@@ -178,7 +176,7 @@ class PttPost:
     @property
     def content(self):
         return "".join(self.root("#main-content")[0].xpath("./text()")).strip()
-    
+
     @property
     def title(self):
         print(self.url)
@@ -193,8 +191,6 @@ class PttPost:
     @property
     def board(self):
         return self.root('#main-content > .article-metaline-right span')[1].text
-
-
 
     @property
     def pushs(self):
@@ -280,5 +276,5 @@ def get_posts(boardname, number=None, session=None):
     if not session:
         session = init_session()
     p = PttPage(boardname, number=number, session=session)
-    posts = [ PttPost(p['url'], session) for p in p.posts ]
-    return [ p.to_dict() for p in posts]
+    posts = [PttPost(p['url'], session) for p in p.posts]
+    return [p.to_dict() for p in posts]
