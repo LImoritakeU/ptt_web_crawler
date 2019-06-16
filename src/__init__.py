@@ -3,6 +3,67 @@ import json
 
 from google.cloud.storage import Client
 from google.cloud import pubsub_v1
+from google.cloud.storage.blob import Blob
+
+
+status_filename = "status.json"
+
+
+class CrawlerGCSConfig:
+    def __init__(self, bucket, blob_path):
+        self.bucket = bucket
+        self.blob_path = blob_path
+        self.blob = self.bucket.get_blob(self.blob_path)
+        if not self.blob.exist():
+            pass
+        json.loads(self.blob.download_as_string())
+
+
+class CrawlerGCSStatus:
+    def __init__(self, bucket, blob_path):
+        self.bucket = bucket
+        self.blob_path = blob_path
+        self.blob = Blob(blob_path, self.bucket)
+
+        self.get()
+
+    def get(self):
+        try:
+            self.content = json.loads(self.blob.download_as_string())
+        except:
+            raise ValueError
+
+        return self.content
+
+    def update(self, board, initial_timestamp, last_timestamp):
+        self.content.setdefault(board, dict())
+        self.content[board]["initial_timestamp_utc+8"] = initial_timestamp
+        self.content[board]["last_timestamp_utc+8"] = last_timestamp
+        self.blob.upload_from_string(json.dumps(self.content))
+
+
+def update_status(data):
+    if "attributes" in data:
+        initial_timestamp = data["attributes"]["initial_timestamp"]
+        last_timestamp = data["attributes"]["last_timestamp"]
+        boardname = data["attributes"]["boardname"]
+
+        status: dict = json.loads(read_from_gcs(status_filename))
+        status.setdefault(boardname, dict())
+        status[boardname]["initial_timestamp_utc+8"] = initial_timestamp
+        status[boardname]["last_timestamp_utc+8"] = last_timestamp
+        insert_to_gcs(folder="", content_str=json.dumps(status))
+
+
+def read_from_gcs(path):
+    blob = bucket.get_blob(path)
+    return blob.download_as_string()
+
+
+def insert_to_gcs(folder="", content_str=None):
+    utcnow_str = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    blob = bucket.blob(f"{folder}/{utcnow_str}")
+    blob.upload_from_string(content_str)
 
 
 def setup_logger():
@@ -34,22 +95,18 @@ def setup_config():
     with open("config.json") as f:
         config = json.loads(f.read())
 
-    # setup status
-    with open("status.json") as f:
-        config["status"] = json.loads(f.read())
-
     return config
 
 
 config = setup_config()
+status = CrawlerGCSStatus(bucket, status_filename)
 publisher = pubsub_v1.PublisherClient()
 subscriber = pubsub_v1.SubscriberClient()
 topic_path = publisher.topic_path(config["project_id"], config["pubsub_topic"])
 subscriber_name = "projects/{}/subscriptions/{}".format(
     config["project_id"], config["subscriber_name"]
 )
-subscriber.create_subscription(subscriber_name, topic_path)
-# cli: Client = Client.from_service_account_json(
-#    "/home/shihhao/cloud_auth/spider.json"
-# )
-# bucket = cli.get_bucket("tw_forum_collect")
+try:
+    subscriber.create_subscription(subscriber_name, topic_path)
+except:
+    pass

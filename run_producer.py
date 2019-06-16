@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 import urllib3
 
-from src import config, publisher, topic_path
+from src import config, publisher, topic_path, status
 from src.producer import produce_urls
 
 

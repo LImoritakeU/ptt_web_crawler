@@ -1,10 +1,13 @@
 import time
 import traceback
 from datetime import datetime, timedelta
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from ptt2json import PttPage
 
-from src import logger, config
+from src import logger, config, status
 
 """
 
@@ -15,13 +18,13 @@ last_timestamp: 最後回傳的最後一筆時間戳記
 until_timestamp: 限定一天以前, 不爬取一天以內的文章
 """
 
-board = config["boardname"]
 retry_limit = config.get("retry_limit", 3)
-initial_timestamp: int = config["status"]["ptt"][board]["initial_timestamp_utc+8"]
 delay_days = config.get("delay_days", 1)
 
 
-def produce_urls():
+def produce_urls(board):
+    initial_timestamp: int = status.content[board]["initial_timestamp_utc+8"]
+
     result = {"urls": [], "initial_timestamp": initial_timestamp, "last_timestamp": ""}
     max_ts = 0
     retry_times = 0
