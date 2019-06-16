@@ -1,0 +1,11 @@
+# crawler
+ptt2json
+
+# cloud
+google-cloud
+google-cloud-storage
+google-cloud-pubsub
+
+# dev
+#jupyterlab
+#neovim
