@@ -8,14 +8,14 @@ from src.producer import produce_urls
 
 def subscriber_handler(data, context, board):
     if "data" in data:
-        logger.debug(data["data"])
-        # results_json = data["data"].decode("utf-8")
         results_json = data["data"]
+        logger.warning("results data: {}".format(results_json))
+        # results_json = data["data"].decode("utf-8")
         results = json.loads(results_json)
         urls = results["urls"]
 
         s = consume_urls_parallel(urls)
-        logger.debug("output: {}".format(s))
+        logger.warning("output: {}".format(s))
         insert_to_gcs(board, s)
 
 
