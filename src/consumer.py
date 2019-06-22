@@ -16,7 +16,7 @@ def consume_url(url, session=None):
         logger.error("error: {} {}".format(url, e))
 
 
-def consume_urls_parallel(urls, board):
+def consume_urls_parallel(urls):
     """consume url and transfer to multi-line json
     """
 
@@ -33,4 +33,5 @@ def consume_urls_parallel(urls, board):
             results = executor.map(lambda url: consume_url(url, session), chunks)
             results = filter(lambda r: isinstance(r, str), results)
             s = "\n".join(results)
-            insert_to_gcs(board, s)
+
+    return s

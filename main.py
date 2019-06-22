@@ -1,7 +1,7 @@
 import os
 import json
 
-from src import status, publisher, topic_path
+from src import status, publisher, topic_path, insert_to_gcs
 from src.consumer import consume_urls_parallel
 from src.producer import produce_urls
 
@@ -12,7 +12,8 @@ def subscriber_handler(data, context, board):
         results = json.loads(results_json)
         urls = results["urls"]
 
-        consume_urls_parallel(urls, board)
+        s = consume_urls_parallel(urls)
+        insert_to_gcs(board, s)
 
 
 def publisher_handler(data, context, board):
@@ -28,7 +29,6 @@ def publisher_handler(data, context, board):
 def pipeline_handler(data, context):
     role = os.environ["role"]
     board = os.environ["board"]
-
     if role == "publisher":
         publisher_handler(data, context, board)
     elif role == "subscriber":
