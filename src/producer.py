@@ -63,7 +63,7 @@ def produce_urls(board):
         except Exception as e:
             if retry_times <= retry_limit:
                 retry_times += 1
-                time.sleep(30)
+                time.sleep(5)
             else:
                 logger.exception(traceback.format_exc())
                 break
@@ -73,4 +73,5 @@ def produce_urls(board):
 
     logger.info("since: {}".format(initial_timestamp))
     logger.info("until: {}".format(max_ts))
+    logger.debug("result: {}".format(result))
     return result

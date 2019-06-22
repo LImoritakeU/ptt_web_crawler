@@ -1,7 +1,6 @@
 import logging
 import json
 from datetime import datetime
-
 from google.cloud.storage import Client
 from google.cloud import pubsub_v1
 from google.cloud.storage.blob import Blob

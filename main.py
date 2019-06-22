@@ -1,18 +1,21 @@
 import os
 import json
 
-from src import status, publisher, topic_path, insert_to_gcs
+from src import status, publisher, topic_path, insert_to_gcs, logger
 from src.consumer import consume_urls_parallel
 from src.producer import produce_urls
 
 
 def subscriber_handler(data, context, board):
     if "data" in data:
-        results_json = data["data"].decode("utf-8")
+        logger.debug(data["data"])
+        # results_json = data["data"].decode("utf-8")
+        results_json = data["data"]
         results = json.loads(results_json)
         urls = results["urls"]
 
         s = consume_urls_parallel(urls)
+        logger.debug("output: {}".format(s))
         insert_to_gcs(board, s)
 
 
