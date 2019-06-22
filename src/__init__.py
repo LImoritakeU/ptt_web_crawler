@@ -83,16 +83,20 @@ def setup_logger():
 
 logger = setup_logger()
 
-cli: Client = Client.from_service_account_json(
-    "/home/shihhao/cloud_auth/firestore_la.json"
-)
+# cli: Client = Client.from_service_account_json()
+cli: Client = Client()
 bucket = cli.get_bucket("ptt_crawl_v2")
 
 
 def setup_config():
-    # setup config
-    with open("default_config.json") as f:
-        config = json.loads(f.read())
+    config = {
+        "retry_limit": 3,
+        "delay_days": 1,
+        "project_id": "294873307860",
+        "pubsub_topic": "ptt_urls",
+        "subscriber_name": "ptt",
+        "gcs_bucket": ""
+    }
 
     return config
 

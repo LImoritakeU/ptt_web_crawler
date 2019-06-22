@@ -65,7 +65,7 @@ def produce_urls(board):
                 retry_times += 1
                 time.sleep(30)
             else:
-                traceback.print(e)
+                logger.exception(traceback.format_exc())
                 break
 
     result["last_timestamp"] = max_ts

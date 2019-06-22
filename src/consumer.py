@@ -2,7 +2,7 @@ from concurrent import futures
 
 from ptt2json import init_session, PttPost
 
-from src import logger, insert_to_gcs
+from src import logger
 
 
 def consume_url(url, session=None):
@@ -22,8 +22,6 @@ def consume_urls_parallel(urls):
 
     max_workers = 20
     chunksize = 1000
-    # with open("text.txt", "r") as f:
-    #    urls = f.readlines()
     urls = [url.strip() for url in urls]
     urls_chunks = [urls[i : i + chunksize] for i in range(0, len(urls), chunksize)]
 
