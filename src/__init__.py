@@ -69,14 +69,14 @@ def insert_to_gcs(folder="", content_str=None):
 def setup_logger():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.WARNING)
-    fh = logging.FileHandler("ptt.log")
+    # fh = logging.FileHandler("ptt.log")
+    # fh.setFormatter(formatter)
+    # logger.addHandler(fh)
     ch = logging.StreamHandler()
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
-    fh.setFormatter(formatter)
     ch.setFormatter(formatter)
-    logger.addHandler(fh)
     logger.addHandler(ch)
     return logger
 
@@ -107,5 +107,5 @@ subscriber_name = "projects/{}/subscriptions/{}".format(
 )
 try:
     subscriber.create_subscription(subscriber_name, topic_path)
-except:
-    pass
+except Exception as e:
+    logger.warning(e)
