@@ -1,10 +1,8 @@
-from datetime import datetime
 from concurrent import futures
 
-from google.cloud.storage import Blob
 from ptt2json import init_session, PttPost
 
-from src import logger, cli, bucket, subscriber
+from src import logger, insert_to_gcs
 
 
 def consume_url(url, session=None):
@@ -18,7 +16,7 @@ def consume_url(url, session=None):
         logger.error("error: {} {}".format(url, e))
 
 
-def consume_urls_parallel(urls):
+def consume_urls_parallel(urls, board):
     """consume url and transfer to multi-line json
     """
 
@@ -35,4 +33,4 @@ def consume_urls_parallel(urls):
             results = executor.map(lambda url: consume_url(url, session), chunks)
             results = filter(lambda r: isinstance(r, str), results)
             s = "\n".join(results)
-            insert_to_gcs(s)
+            insert_to_gcs(board, s)

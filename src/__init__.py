@@ -1,10 +1,10 @@
 import logging
 import json
+from datetime import datetime
 
 from google.cloud.storage import Client
 from google.cloud import pubsub_v1
 from google.cloud.storage.blob import Blob
-
 
 status_filename = "status.json"
 
@@ -83,7 +83,6 @@ def setup_logger():
 
 logger = setup_logger()
 
-
 cli: Client = Client.from_service_account_json(
     "/home/shihhao/cloud_auth/firestore_la.json"
 )
@@ -92,7 +91,7 @@ bucket = cli.get_bucket("ptt_crawl_v2")
 
 def setup_config():
     # setup config
-    with open("config.json") as f:
+    with open("default_config.json") as f:
         config = json.loads(f.read())
 
     return config

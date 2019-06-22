@@ -23,19 +23,16 @@ if __name__ == "__main__":
         boardname=boardname,
     )
 
-    """
-
     with open(
         "urls_from_{}_to_{}.txt".format(initial_timestamp, last_timestamp), "w"
     ) as f:
         f.write(json.dumps(result))
-    """
 
-    with open("status.json", "r+") as f:
-        obj = json.loads(f.read())
-        obj["ptt"][boardname]["initial_timestamp_utc+8"] = initial_timestamp
-        obj["ptt"][boardname]["last_timestamp_utc+8"] = last_timestamp
-
-        f.seek(0)
-        f.write(json.dumps(obj))
-        f.truncate()
+    # with open("status.json", "r+") as f:
+    #     obj = json.loads(f.read())
+    #     obj["ptt"][boardname]["initial_timestamp_utc+8"] = initial_timestamp
+    #     obj["ptt"][boardname]["last_timestamp_utc+8"] = last_timestamp
+    #
+    #     f.seek(0)
+    #     f.write(json.dumps(obj))
+    #     f.truncate()

@@ -23,7 +23,8 @@ delay_days = config.get("delay_days", 1)
 
 
 def produce_urls(board):
-    initial_timestamp: int = status.content[board]["initial_timestamp_utc+8"]
+    # load lastest timestamp at last time
+    initial_timestamp: int = status.content[board]["last_timestamp_utc+8"]
 
     result = {"urls": [], "initial_timestamp": initial_timestamp, "last_timestamp": ""}
     max_ts = 0
