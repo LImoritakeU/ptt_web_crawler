@@ -20,6 +20,7 @@ def consume_urls_parallel(urls):
     """consume url and transfer to multi-line json
     """
 
+    ls = []
     max_workers = 20
     chunksize = 1000
     urls = [url.strip() for url in urls]
@@ -31,5 +32,7 @@ def consume_urls_parallel(urls):
             results = executor.map(lambda url: consume_url(url, session), chunks)
             results = filter(lambda r: isinstance(r, str), results)
             s = "\n".join(results)
+            ls.append(s)
 
+    s = "\n".join(ls)
     return s

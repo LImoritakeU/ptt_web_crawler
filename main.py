@@ -1,7 +1,7 @@
 import os
 import json
 
-from src import status, publisher, topic_path, insert_to_gcs, logger
+from src import status, publisher, topic_path, insert_to_gcs, logger, bucket
 from src.consumer import consume_urls_parallel
 from src.producer import produce_urls
 
@@ -11,11 +11,10 @@ def subscriber_handler(data, context, board):
         results_json = data["data"]
         logger.warning("results data: {}".format(results_json))
         # results_json = data["data"].decode("utf-8")
-        results = json.loads(results_json)
-        urls = results["urls"]
+        urls = json.loads(results_json)
 
         s = consume_urls_parallel(urls)
-        logger.warning("output: {}".format(s))
+        board = board.lower()
         insert_to_gcs(board, s)
 
 
@@ -24,8 +23,11 @@ def publisher_handler(data, context, board):
     initial_timestamp = result["initial_timestamp"]
     last_timestamp = result["last_timestamp"]
     urls = result["urls"]
+    data = json.dumps(urls).encode("utf-8")
 
-    publisher.publish(topic_path, json.dumps(urls).encode("utf-8"))
+    publisher.publish(topic_path, data)
+    blob = bucket.blob("pub/urls_from_{}_to_{}".format(initial_timestamp, last_timestamp))
+    blob.upload_from_string(data.decode("utf-8"))
     status.update(board, initial_timestamp, last_timestamp)
 
 

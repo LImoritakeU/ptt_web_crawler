@@ -102,6 +102,7 @@ def setup_config():
 
 config = setup_config()
 status = CrawlerGCSStatus(bucket, status_filename)
+
 publisher = pubsub_v1.PublisherClient()
 subscriber = pubsub_v1.SubscriberClient()
 topic_path = publisher.topic_path(config["project_id"], config["pubsub_topic"])
