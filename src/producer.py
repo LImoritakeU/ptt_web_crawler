@@ -22,9 +22,11 @@ retry_limit = config.get("retry_limit", 3)
 delay_days = config.get("delay_days", 1)
 
 
-def produce_urls(board):
-    # load lastest timestamp at last time
-    initial_timestamp: int = status.content[board]["last_timestamp_utc+8"]
+def produce_urls(board, initial_timestamp=None):
+    if initial_timestamp is None:  # you can indicate initial_timestamp manually
+        # load lastest timestamp at last time
+        initial_timestamp: int = status.content[board]["last_timestamp_utc+8"]
+
 
     result = {"urls": [], "initial_timestamp": initial_timestamp, "last_timestamp": ""}
     max_ts = 0
