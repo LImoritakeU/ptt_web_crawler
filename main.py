@@ -1,5 +1,6 @@
 import os
 import json
+import base64
 
 from src import status, publisher, topic_path, insert_to_gcs, logger, bucket
 from src.consumer import consume_urls_parallel
@@ -8,7 +9,7 @@ from src.producer import produce_urls
 
 def subscriber_handler(data, context, board):
     if "data" in data:
-        results_json = data["data"].decode("utf-8")
+        results_json = base64.b64decode(data["data"]).decode("utf-8")
         logger.warning("results data: {}".format(results_json))
         # results_json = data["data"].decode("utf-8")
         urls = json.loads(results_json)
